@@ -11,7 +11,12 @@ def shortest_path_grid(grid, start, goal):
     @param goal tuple of goal index
     @return length of path
     '''
+    
+    # Assume grid is square, n x n
     n = len(grid)
+
+    for i in range(n):
+            
 
 
 if __name__ == "__main__":
