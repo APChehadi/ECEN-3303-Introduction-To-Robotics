@@ -44,6 +44,7 @@ def check_if_color_in_range(bgr_tuple):
     if in_range: return True
   return False
 
+
 def do_color_filtering(img):
   # Color Filtering
   # Objective: Take an RGB image as input, and create a "mask image" to filter out irrelevant pixels
@@ -70,8 +71,17 @@ def do_color_filtering(img):
   #       checking if its color is in a range we've specified using check_if_color_in_range
   # TIP: You'll need to index into 'mask' using (y,x) instead of (x,y) as you may be
   #      more familiar with, due to how the matrices are stored
+  
+  for x in range(img_width):
+    for y in range(img_height):
+      temp_pixel = img[y,x]
+      if check_if_color_in_range(temp_pixel):
+        mask[y,x] = 1
+      else:
+        mask[y,x] = 0
 
   return mask
+
 
 def expand(img_mask, cur_coordinate, coordinates_in_blob):
   # Find all of the non-zero pixels connected to a location
@@ -98,6 +108,7 @@ def expand(img_mask, cur_coordinate, coordinates_in_blob):
   for coord in [above, below, left, right]: 
     expand(img_mask, coord, coordinates_in_blob)
 
+
 def expand_nr(img_mask, cur_coord, coordinates_in_blob):
   # Non-recursive function to find all of the non-zero pixels connected to a location
 
@@ -106,19 +117,33 @@ def expand_nr(img_mask, cur_coord, coordinates_in_blob):
   # Set img_mask at cur_coordinate to 0 so we don't double-count this coordinate if we expand back onto it in the future
   # Add cur_coordinate to coordinates_in_blob
   # Call expand on all 4 neighboring coordinates of cur_coordinate (above/below, right/left). Make sure you pass in the same img_mask and coordinates_in_blob objects you were passed so the recursive calls all share the same objects
+  
   coordinates_in_blob = []
   coordinate_list = [cur_coord] # List of all coordinates to try expanding to
+  
   while len(coordinate_list) > 0:
     cur_coordinate = coordinate_list.pop() # Take the first coordinate in the list and perform 'expand' on it
     # TODO: Check to make sure cur_coordinate is in bounds, otherwise 'continue'
     # TODO: Check to see if the value is 0, if so, 'continue'
+    if cur_coordinate[0] < 0 or cur_coordinate[1] < 0 or cur_coordinate[0] >= img_mask.shape[0] or cur_coordinate[1] >= img_mask.shape[1]: 
+      continue
+    if img_mask[cur_coordinate[0], cur_coordinate[1]] == 0.0: 
+      continue
 
     # TODO: Set image mask at this coordinate to 0
     # TODO: Add this coordinate to 'coordinates_in_blob'
+    img_mask[cur_coordinate[0],cur_coordinate[1]] = 0
+    coordinates_in_blob.append(cur_coordinate)
 
     # TODO: Add all neighboring coordinates (above, below, left, right) to coordinate_list to expand to them
+    above = [cur_coordinate[0]-1, cur_coordinate[1]]
+    below = [cur_coordinate[0]+1, cur_coordinate[1]]
+    left = [cur_coordinate[0], cur_coordinate[1]-1]
+    right = [cur_coordinate[0], cur_coordinate[1]+1]
+    coordinate_list.extend([above, below, left, right])
 
   return coordinates_in_blob
+
 
 def get_blobs(img_mask):
   # Blob detection
@@ -139,14 +164,20 @@ def get_blobs(img_mask):
  
   # TODO: Copy image mask into local variable using copy.copy
   blobs_list = [] # List of all blobs, each element being a list of coordinates belonging to each blob
+  mask_copy = copy.copy(img_mask)
 
   # TODO: Iterate through all 'y' coordinates in img_mask
   #   TODO: Iterate through all 'x' coordinates in img_mask
   #     TODO: If mask value at [y,x] is 1, call expand_nr on copy of image mask and coordinate (y,x), giving a third argument of an empty list to populate with blob_coords.
   #     TODO: Add blob_coords to blobs_list
-
+  for x in range(img_mask_width):
+    for y in range(img_mask_height):
+      if mask_copy[y,x]:
+        non_zero_pixels = expand_nr(mask_copy, [y,x], [])
+        blobs_list.append(non_zero_pixels)
 
   return blobs_list
+
 
 def get_blob_centroids(blobs_list):
   # Coordinate retrieval
@@ -161,8 +192,12 @@ def get_blob_centroids(blobs_list):
   object_positions_list = []
 
   # TODO: Implement blob centroid calculation
+  for blob in blobs_list:
+    temp_blob_centroid = np.mean(blob, axis=0)
+    object_positions_list.append(temp_blob_centroid)
   
   return object_positions_list
+
 
 def main():
   global img_height, img_width
@@ -173,9 +208,9 @@ def main():
   # TODO: Add the color ranges for each block here!
   # HINT: Open up the image in your favorite image editor and use the eyedropper tool to find a light and dark spot on each block -- those colors can be used for each range.
   # Examples:
-  # add_color_range_to_detect([0,0,200], [0,0,255]) # Detect red
-  # add_color_range_to_detect([0,200,0], [0,255,0]) # Detect green
-  # add_color_range_to_detect([200,0,0], [255,0,0]) # Detect blue
+  add_color_range_to_detect([0,0,200], [0,0,255]) # Detect red
+  add_color_range_to_detect([0,200,0], [0,255,0]) # Detect green
+  add_color_range_to_detect([200,0,0], [255,0,0]) # Detect blue
 
   ########## PART 1 ############
   # Create img_mask of all foreground pixels, where foreground is defined as passing the color filter
