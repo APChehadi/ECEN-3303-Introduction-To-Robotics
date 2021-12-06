@@ -6,7 +6,7 @@
 # Please do not collaborate on this assignment -- your code must be your own!
 
 # TODO: INSERT YOUR NAME HERE
-LAST_NAME = "mylastname"
+LAST_NAME = "Chehadi"
 
 import pdb
 import pickle
@@ -72,8 +72,8 @@ def do_color_filtering(img):
   # TIP: You'll need to index into 'mask' using (y,x) instead of (x,y) as you may be
   #      more familiar with, due to how the matrices are stored
   
-  for x in range(img_width):
-    for y in range(img_height):
+  for y in range(img_height):
+    for x in range(img_width):
       temp_pixel = img[y,x]
       if check_if_color_in_range(temp_pixel):
         mask[y,x] = 1
@@ -170,9 +170,9 @@ def get_blobs(img_mask):
   #   TODO: Iterate through all 'x' coordinates in img_mask
   #     TODO: If mask value at [y,x] is 1, call expand_nr on copy of image mask and coordinate (y,x), giving a third argument of an empty list to populate with blob_coords.
   #     TODO: Add blob_coords to blobs_list
-  for x in range(img_mask_width):
-    for y in range(img_mask_height):
-      if mask_copy[y,x]:
+  for y in range(img_mask_height):
+    for x in range(img_mask_width):
+      if mask_copy[y,x] == 1:
         non_zero_pixels = expand_nr(mask_copy, [y,x], [])
         blobs_list.append(non_zero_pixels)
 
@@ -193,8 +193,9 @@ def get_blob_centroids(blobs_list):
 
   # TODO: Implement blob centroid calculation
   for blob in blobs_list:
-    temp_blob_centroid = np.mean(blob, axis=0)
-    object_positions_list.append(temp_blob_centroid)
+    if len(blob) > 800:
+      temp_blob_centroid = np.mean(blob, axis=0)
+      object_positions_list.append((temp_blob_centroid[0], temp_blob_centroid[1]))
   
   return object_positions_list
 
@@ -208,9 +209,14 @@ def main():
   # TODO: Add the color ranges for each block here!
   # HINT: Open up the image in your favorite image editor and use the eyedropper tool to find a light and dark spot on each block -- those colors can be used for each range.
   # Examples:
-  add_color_range_to_detect([0,0,200], [0,0,255]) # Detect red
-  add_color_range_to_detect([0,200,0], [0,255,0]) # Detect green
-  add_color_range_to_detect([200,0,0], [255,0,0]) # Detect blue
+  # add_color_range_to_detect([0,0,200], [0,0,255]) # Detect red
+  # add_color_range_to_detect([0,200,0], [0,255,0]) # Detect green
+  # add_color_range_to_detect([200,0,0], [255,0,0]) # Detect blue
+
+  add_color_range_to_detect([0,0,124], [105, 105,255]) # Detect red 
+  add_color_range_to_detect([33,104,28], [130,255,110]) # Detect green 
+  add_color_range_to_detect([200,80,15], [255,140,80]) # Detect blue 
+  add_color_range_to_detect([0,170,205], [60,255,255]) # Detect yellow
 
   ########## PART 1 ############
   # Create img_mask of all foreground pixels, where foreground is defined as passing the color filter
