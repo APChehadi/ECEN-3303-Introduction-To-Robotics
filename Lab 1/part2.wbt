@@ -1,0 +1,78 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  basicTimeStep 16
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 1 0 0 4.71238898038469
+  position 3.796538020725812e-16 5.033767299151285 -1.2623518581330727e-16
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  size 3 3
+}
+Solid {
+  translation 0 0.15 -1.5
+  scale 3 3 3
+  children [
+    DEF WALLS_SHAPE Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 0.498039
+        roughness 0.5
+        metalness 0
+      }
+      geometry Box {
+        size 1 0.1 0.01
+      }
+    }
+  ]
+  name "Walls"
+  boundingObject USE WALLS_SHAPE
+}
+Solid {
+  translation -1.5 0.15 0
+  rotation 0 1 0 1.5708
+  scale 3 3 3
+  children [
+    USE WALLS_SHAPE
+  ]
+  name "Walls(1)"
+  boundingObject USE WALLS_SHAPE
+}
+Solid {
+  translation 1.5 0.15 0
+  rotation 0 1 0 1.5708
+  scale 3 3 3
+  children [
+    USE WALLS_SHAPE
+  ]
+  name "Walls(2)"
+  boundingObject USE WALLS_SHAPE
+  translationStep 0
+}
+Solid {
+  translation 0 0.15 1.5
+  scale 3 3 3
+  children [
+    USE WALLS_SHAPE
+  ]
+  name "Walls(3)"
+  boundingObject USE WALLS_SHAPE
+  translationStep 0
+}
+WoodenBox {
+  translation 0 0.05 1
+  name "wooden box(1)"
+  size 0.1 0.1 0.1
+}
+WoodenBox {
+  translation 0 0.05 -0.3
+  name "wooden box(2)"
+  size 0.1 0.1 0.1
+}
+E-puck {
+  controller "part2EPuck"
+}
